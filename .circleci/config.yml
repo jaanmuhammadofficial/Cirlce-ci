@@ -3,14 +3,16 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:20
     steps:
       - checkout
       - run:
-          name: List files
-          command: ls -l
+          name: Print Files
+          command: |
+            echo "Files inside your repository:"
+            ls -al
 
 workflows:
-  build_workflow:
+  run_pipeline:
     jobs:
       - build
