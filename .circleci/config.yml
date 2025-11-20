@@ -1,0 +1,16 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          name: List files
+          command: ls -l
+
+workflows:
+  build_workflow:
+    jobs:
+      - build
