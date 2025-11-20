@@ -1,16 +1,36 @@
 version: 2.1
 
 jobs:
-  build:
+  deploy:
     docker:
       - image: cimg/base:stable
     steps:
       - checkout
       - run:
-          name: List files
-          command: ls -l
+          name: Install Git
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y git
+      - run:
+          name: Deploy to GitHub Pages
+          command: |
+            git config --global user.email "circleci@yourdomain.com"
+            git config --global user.name "CircleCI Bot"
+
+            # Create folder for gh-pages
+            rm -rf out || true
+            mkdir out
+            cp -R * out
+
+            cd out
+            git init
+            git add .
+            git commit -m "Deploy from CircleCI"
+            git branch -M gh-pages
+            git remote add origin https://$GH_TOKEN@github.com/<your-username>/<your-repo>.git
+            git push -f origin gh-pages
 
 workflows:
-  build_workflow:
+  deploy-workflow:
     jobs:
-      - build
+      - deploy
