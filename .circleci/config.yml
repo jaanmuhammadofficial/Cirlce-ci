@@ -1,46 +1,43 @@
+# .circleci/config.yml
 version: 2.1
 
 jobs:
-  deploy:
+  build:
     docker:
-      - image: cimg/node:20
+      - image: cimg/python:3.11  # Use an image suitable for your project
+    working_directory: ~/repo
+
     steps:
-      - checkout
-      - run:
-<<<<<<< HEAD
-          name: Install Git
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y git
-      - run:
-          name: Deploy to GitHub Pages
-          command: |
-            git config --global user.email "circleci@yourdomain.com"
-            git config --global user.name "CircleCI Bot"
+      - checkout  # Check out the source code
 
-            # Create folder for gh-pages
-            rm -rf out || true
-            mkdir out
-            cp -R * out
+      # Restore cached dependencies (optional, speeds up builds)
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-
 
-            cd out
-            git init
-            git add .
-            git commit -m "Deploy from CircleCI"
-            git branch -M gh-pages
-            git remote add origin https://$GH_TOKEN@github.com/<your-username>/<your-repo>.git
-            git push -f origin gh-pages
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+      # Save dependencies to cache
+      - save_cache:
+          paths:
+            - ./venv
+            - ~/.cache/pip
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      # Run tests
+      - run:
+          name: Run tests
+          command: |
+            pytest
 
 workflows:
-  deploy-workflow:
-=======
-          name: Print Files
-          command: |
-            echo "Files inside your repository:"
-            ls -al
-
-workflows:
-  run_pipeline:
->>>>>>> ab9147eb039acbcf81f227680bd2c597f1d341a9
+  version: 2
+  build_and_test:
     jobs:
-      - deploy
+      - build
