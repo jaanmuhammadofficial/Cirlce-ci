@@ -3,10 +3,11 @@ version: 2.1
 jobs:
   deploy:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:20
     steps:
       - checkout
       - run:
+<<<<<<< HEAD
           name: Install Git
           command: |
             sudo apt-get update
@@ -32,5 +33,14 @@ jobs:
 
 workflows:
   deploy-workflow:
+=======
+          name: Print Files
+          command: |
+            echo "Files inside your repository:"
+            ls -al
+
+workflows:
+  run_pipeline:
+>>>>>>> ab9147eb039acbcf81f227680bd2c597f1d341a9
     jobs:
       - deploy
